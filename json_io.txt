@@ -1,0 +1,70 @@
+JSON input
+{
+   "personID": 123
+}
+JSON output
+{
+   "mealOrdered": 9,
+   "mealTaken": 9,
+   "mealRemaining": 9,
+   "pickUpRecord": [
+       {
+       "personID" : 123
+       "Name": "John Doe 无名氏 1",
+       "pickUpDate":    '2019-05-03T10:15:30Z'
+       },
+       {
+       "personID" : 456
+       "Name": "John Doe 无名氏 2",
+       "pickUpDate":    '2019-05-03T10:15:30Z'
+       }
+   }
+}
+check meal API -/meal/status
+JSON input
+{
+   "personID": 123 or
+   "familyID: 456 or
+   "phoneNumber": 789
+}
+JSON output
+{
+   "familyID" : [
+    mealPlans : [
+        {
+            "mealID" : 1
+            "description": "Breakfast 12/28/19"    
+            "mealOrdered": 9,
+            "mealTaken": 9,
+            "mealRemaining": 9,
+            "pickUpRecord": [
+                {
+                "personID" : 123
+                "Name": "John Doe 无名氏 1",
+                "pickUpDate":    '2019-05-03T10:15:30Z'
+                },
+                {
+                "personID" : 456
+                "Name": "John Doe 无名氏 2",
+                "pickUpDate":    '2019-05-03T10:15:30Z'
+                }
+            ]
+        },
+        {
+            "mealID" : 2
+            "description": "Lunch 12/28/19"    
+            "mealOrdered": 9,
+            "mealTaken": 0,
+            "mealRemaining": 9,
+            "pickUpRecord": [  ]
+        },
+        {
+            "mealID" : 3
+            "description": "Dinner 12/29/19"    
+            "mealOrdered": 6,
+            "mealTaken": 0,
+            "mealRemaining": 6,
+            "pickUpRecord": [  ]
+        },
+      ]
+} (edited) 
