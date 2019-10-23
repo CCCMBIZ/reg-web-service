@@ -11,13 +11,13 @@ import javax.validation.constraints.NotNull;
 public class MealStatusRequestDTO {
 
 
-    private Integer personID = null;
+    private Integer personId = null;
 
 
-    private Integer familyID = null;
+    private Integer familyId = null;
 
 
-    private Integer phoneNumber = null;
+    private Integer mealId = null;
 
 
     /**
@@ -26,11 +26,11 @@ public class MealStatusRequestDTO {
     @ApiModelProperty(value = "")
     @JsonProperty("personID")
     public Integer getPersonID() {
-        return personID;
+        return personId;
     }
 
     public void setPersonID(Integer personID) {
-        this.personID = personID;
+        this.personId = personId;
     }
 
 
@@ -40,11 +40,11 @@ public class MealStatusRequestDTO {
     @ApiModelProperty(value = "")
     @JsonProperty("familyID")
     public Integer getFamilyID() {
-        return familyID;
+        return familyId;
     }
 
     public void setFamilyID(Integer familyID) {
-        this.familyID = familyID;
+        this.familyId = familyId;
     }
 
 
@@ -52,13 +52,13 @@ public class MealStatusRequestDTO {
      *
      **/
     @ApiModelProperty(value = "")
-    @JsonProperty("phoneNumber")
-    public Integer getPhoneNumber() {
-        return phoneNumber;
+    @JsonProperty("mealId")
+    public Integer getMealId() {
+        return mealId;
     }
 
-    public void setPhoneNumber(Integer phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setMealId(Integer phoneNumber) {
+        this.mealId = mealId;
     }
 
 
@@ -67,9 +67,9 @@ public class MealStatusRequestDTO {
         StringBuilder sb = new StringBuilder();
         sb.append("class MealStatusRequestDTO {\n");
 
-        sb.append("  personID: ").append(personID).append("\n");
-        sb.append("  familyID: ").append(familyID).append("\n");
-        sb.append("  phoneNumber: ").append(phoneNumber).append("\n");
+        sb.append("  personID: ").append(personId).append("\n");
+        sb.append("  familyID: ").append(familyId).append("\n");
+        sb.append("  MealId: ").append(mealId).append("\n");
         sb.append("}\n");
         return sb.toString();
     }

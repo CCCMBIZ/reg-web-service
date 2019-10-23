@@ -11,7 +11,8 @@ import javax.validation.constraints.NotNull;
 public class MealScanRequestDTO {
 
 
-    private Integer personID = null;
+    private Integer personId = null;
+    private Integer mealId = null ;
 
 
     /**
@@ -20,11 +21,11 @@ public class MealScanRequestDTO {
     @ApiModelProperty(value = "")
     @JsonProperty("personID")
     public Integer getPersonID() {
-        return personID;
+        return personId;
     }
 
     public void setPersonID(Integer personID) {
-        this.personID = personID;
+        this.personId = personID;
     }
 
 
@@ -33,7 +34,7 @@ public class MealScanRequestDTO {
         StringBuilder sb = new StringBuilder();
         sb.append("class MealScanRequestDTO {\n");
 
-        sb.append("  personID: ").append(personID).append("\n");
+        sb.append("  personID: ").append(personId).append("\n");
         sb.append("}\n");
         return sb.toString();
     }

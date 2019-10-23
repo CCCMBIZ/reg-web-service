@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/meal")
-@Api(value="conferenceMealService", description="Operations pertaining to scan nametag to pick up meals")
+@Api(value = "conferenceMealService", description = "Operations pertaining to scan nametag to pick up meals")
 public class MealController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -38,46 +38,61 @@ public class MealController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     }
     )
-    @RequestMapping(value = "/list", method= RequestMethod.GET, produces = "application/json")
-    public Iterable<Mealplan> list(Model model){
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    public Iterable<Mealplan> list(Model model) {
         Iterable<Mealplan> mealplanList = mealService.listAllMealplan();
         return mealplanList;
     }
 
     @ApiOperation(value = "Search meal status with an ID", response = Mealplan.class)
-    @RequestMapping(value = "/status/{id}", method= RequestMethod.GET, produces = "application/json")
-    public Mealplan showMealplan(@PathVariable Integer id, Model model){
-       Mealplan mealplan = mealService.findMealplanByHouseholdId(id) ;
-        return mealplan;
-    }
+    @RequestMapping(value = "/status/{id}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<MealStatusResponseDTO> searchMeal(@PathVariable Integer id, Model model) {
 
-    @ApiOperation(value = "Search Meal")
-    @RequestMapping(value = "/status", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<MealStatusResponseDTO> searchMeal(@RequestBody MealStatusRequestDTO request){
-        logger.info("Check Status Person ID:"+ request.getPersonID());
-
-        ResponseEntity<MealStatusResponseDTO> responseEntity = null ;
-
-        MealStatusResponseDTO response = new MealStatusResponseDTO();
-        // Find entire meal plan associated with the household ID
         Integer mealId = mealService.getMealIDByTime(DateTime.now());
 
-        Integer householdId = mealService.getHouseholdIdByPersonID(request.getPersonID());
+        Integer householdId = mealService.getHouseholdIdByPersonID(id);
 
-        response.setFamilyID(householdId);
+        MealStatusResponseDTO response =  getMealStatus(householdId, mealId);
+        ResponseEntity<MealStatusResponseDTO> responseEntity = null;
 
-        if (householdId != 0) {
-
-            // Retrieve meal information how many ordered, and picked up
-            MealStatusResponseMealPlansDTO mealplan = mealService.retrieveMealPlanDetails(householdId, mealId);
-
-            List<MealStatusResponseMealPlansDTO> mealplanList = new ArrayList() ;
-            mealplanList.add(mealplan);
-            response.setMealPlans(mealplanList);
+        if (response.getFamilyID() != 0) {
 
             responseEntity = new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.OK);
 
         } else {
+
+            responseEntity = new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.NOT_FOUND);
+        }
+
+        return responseEntity;
+    }
+
+    @ApiOperation(value = "Search Meal")
+    @RequestMapping(value = "/status", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<MealStatusResponseDTO> searchMeal(@RequestBody MealStatusRequestDTO request) {
+        logger.info("Check Status Person ID:" + request.getPersonID());
+
+        // Find entire meal plan associated with the household ID
+        Integer mealId = 0;
+
+        if (request.getMealId() == null || request.getMealId() == 0) {
+            mealId = mealService.getMealIDByTime(DateTime.now());
+        } else {
+            mealId = request.getMealId();
+        }
+
+        Integer householdId = mealService.getHouseholdIdByPersonID(request.getPersonID());
+
+        MealStatusResponseDTO response = getMealStatus(householdId, mealId);
+
+        ResponseEntity<MealStatusResponseDTO> responseEntity = null;
+
+        if (response.getFamilyID() != 0) {
+
+            responseEntity = new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.OK);
+
+        } else {
+
             responseEntity = new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.NOT_FOUND);
         }
 
@@ -86,10 +101,10 @@ public class MealController {
 
     @ApiOperation(value = "Scan Meal")
     @RequestMapping(value = "/scan", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<MealScanResponseDTO> scanMeal(@RequestBody MealScanRequestDTO request){
-        logger.info("Scan Person ID:"+ request.getPersonID());
+    public ResponseEntity<MealScanResponseDTO> scanMeal(@RequestBody MealScanRequestDTO request) {
+        logger.info("Scan Person ID:" + request.getPersonID());
 
-        MealScanResponseDTO response = mealService.scan(request) ;
+        MealScanResponseDTO response = mealService.scan(request);
         // Find current meal plan associated with household of the scanned person
 
         // Retrieve meal information how many ordered, and picked up
@@ -101,4 +116,23 @@ public class MealController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
+    private MealStatusResponseDTO getMealStatus(Integer householdId, Integer mealId) {
+
+        MealStatusResponseDTO mailStatus = new MealStatusResponseDTO();
+
+        mailStatus.setFamilyID(householdId);
+
+        if (householdId == 0) {
+            return mailStatus; //return empty
+        }
+
+        // Retrieve meal information how many ordered, and picked up
+        MealStatusResponseMealPlansDTO mealplan = mealService.retrieveMealPlanDetails(householdId, mealId);
+
+        List<MealStatusResponseMealPlansDTO> mealplanList = new ArrayList();
+        mealplanList.add(mealplan);
+        mailStatus.setMealPlans(mealplanList);
+
+        return mailStatus;
+    }
 }

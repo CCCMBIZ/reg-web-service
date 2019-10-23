@@ -159,6 +159,7 @@ public class MealServiceImpl implements MealService {
         Optional<Meal> optionalMeal = mealRepository.findById(mealId);
 
         Register register = null;
+
         if (optionalMeal.isPresent() && (register = registerRepository.findByHouseholdId(householdId)) != null) {
             Meal meal = optionalMeal.get();
             // Setup meal description
@@ -227,11 +228,13 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public Integer getHouseholdIdByPersonID(Integer personId) {
+
         Optional<Profile> optionalProfile = profileRepository.findById(personId);
+
         if (optionalProfile.isPresent()) {
             return optionalProfile.get().getHouseholdId() ;
         }
-        else {
+        else { // Should throw NotFound exception?
             return 0 ;
         }
     }

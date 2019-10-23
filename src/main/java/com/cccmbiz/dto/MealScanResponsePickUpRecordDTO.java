@@ -17,7 +17,6 @@ public class MealScanResponsePickUpRecordDTO {
 
     private String name = null;
 
-
     /**
      *
      **/
