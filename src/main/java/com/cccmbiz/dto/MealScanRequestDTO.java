@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 @ApiModel(description = "")
 public class MealScanRequestDTO {
 
-
     private Integer personId = null;
     private Integer mealId = null ;
 
@@ -18,14 +17,24 @@ public class MealScanRequestDTO {
     /**
      *
      **/
-    @ApiModelProperty(value = "")
-    @JsonProperty("personID")
-    public Integer getPersonID() {
+    @ApiModelProperty(value = "Person ID")
+    @JsonProperty("personId")
+    public Integer getPersonId() {
         return personId;
     }
 
-    public void setPersonID(Integer personID) {
-        this.personId = personID;
+    public void setPersonId(Integer personId) {
+        this.personId = personId;
+    }
+
+    @ApiModelProperty(value = "Meal ID")
+    @JsonProperty("mealId")
+    public Integer getMealId() {
+        return mealId;
+    }
+
+    public void setMealId(Integer mealId) {
+        this.mealId = mealId;
     }
 
 
@@ -34,7 +43,7 @@ public class MealScanRequestDTO {
         StringBuilder sb = new StringBuilder();
         sb.append("class MealScanRequestDTO {\n");
 
-        sb.append("  personID: ").append(personId).append("\n");
+        sb.append("  personId: ").append(personId).append("\n");
         sb.append("}\n");
         return sb.toString();
     }

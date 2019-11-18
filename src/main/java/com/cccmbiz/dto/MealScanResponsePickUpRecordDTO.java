@@ -13,7 +13,7 @@ public class MealScanResponsePickUpRecordDTO {
 
     private String pickUpDate = null;
 
-    private Integer personID = null;
+    private Integer personId = null;
 
     private String name = null;
 
@@ -35,13 +35,13 @@ public class MealScanResponsePickUpRecordDTO {
      *
      **/
     @ApiModelProperty(value = "")
-    @JsonProperty("personID")
-    public Integer getPersonID() {
-        return personID;
+    @JsonProperty("personId")
+    public Integer getPersonId() {
+        return personId;
     }
 
-    public void setPersonID(Integer personID) {
-        this.personID = personID;
+    public void setPersonId(Integer personId) {
+        this.personId = personId ;
     }
 
 
@@ -65,7 +65,7 @@ public class MealScanResponsePickUpRecordDTO {
         sb.append("class MealScanResponsePickUpRecordDTO {\n");
 
         sb.append("  pickUpDate: ").append(pickUpDate).append("\n");
-        sb.append("  personID: ").append(personID).append("\n");
+        sb.append("  personId: ").append(personId).append("\n");
         sb.append("  name: ").append(name).append("\n");
         sb.append("}\n");
         return sb.toString();

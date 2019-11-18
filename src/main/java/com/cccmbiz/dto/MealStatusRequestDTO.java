@@ -23,13 +23,13 @@ public class MealStatusRequestDTO {
     /**
      *
      **/
-    @ApiModelProperty(value = "")
-    @JsonProperty("personID")
-    public Integer getPersonID() {
+    @ApiModelProperty(value = "Person ID")
+    @JsonProperty("personId")
+    public Integer getPersonId() {
         return personId;
     }
 
-    public void setPersonID(Integer personID) {
+    public void setPersonId(Integer personId) {
         this.personId = personId;
     }
 
@@ -37,13 +37,13 @@ public class MealStatusRequestDTO {
     /**
      *
      **/
-    @ApiModelProperty(value = "")
-    @JsonProperty("familyID")
-    public Integer getFamilyID() {
+    @ApiModelProperty(value = "Household ID")
+    @JsonProperty("familyId")
+    public Integer getFamilyId() {
         return familyId;
     }
 
-    public void setFamilyID(Integer familyID) {
+    public void setFamilyId(Integer familyId) {
         this.familyId = familyId;
     }
 
@@ -51,7 +51,7 @@ public class MealStatusRequestDTO {
     /**
      *
      **/
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "Meal ID")
     @JsonProperty("mealId")
     public Integer getMealId() {
         return mealId;
@@ -67,8 +67,8 @@ public class MealStatusRequestDTO {
         StringBuilder sb = new StringBuilder();
         sb.append("class MealStatusRequestDTO {\n");
 
-        sb.append("  personID: ").append(personId).append("\n");
-        sb.append("  familyID: ").append(familyId).append("\n");
+        sb.append("  personId: ").append(personId).append("\n");
+        sb.append("  familyId: ").append(familyId).append("\n");
         sb.append("  MealId: ").append(mealId).append("\n");
         sb.append("}\n");
         return sb.toString();

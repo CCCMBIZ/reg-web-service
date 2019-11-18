@@ -12,7 +12,7 @@ public class MealStatusResponseMealPlansDTO {
 
     private List<MealScanResponsePickUpRecordDTO> pickUpRecord = new ArrayList<MealScanResponsePickUpRecordDTO>();
 
-    private Integer mealID = null;
+    private Integer mealId = null;
 
     private Integer mealOrdered = null;
 
@@ -40,13 +40,13 @@ public class MealStatusResponseMealPlansDTO {
      *
      **/
     @ApiModelProperty(value = "")
-    @JsonProperty("mealID")
-    public Integer getMealID() {
-        return mealID;
+    @JsonProperty("mealId")
+    public Integer getMealId() {
+        return mealId;
     }
 
-    public void setMealID(Integer mealID) {
-        this.mealID = mealID;
+    public void setMealId(Integer mealId) {
+        this.mealId = mealId;
     }
 
 
@@ -112,7 +112,7 @@ public class MealStatusResponseMealPlansDTO {
         sb.append("class MealStatusResponseMealPlansDTO {\n");
 
         sb.append("  pickUpRecord: ").append(pickUpRecord).append("\n");
-        sb.append("  mealID: ").append(mealID).append("\n");
+        sb.append("  mealID: ").append(mealId).append("\n");
         sb.append("  mealOrdered: ").append(mealOrdered).append("\n");
         sb.append("  description: ").append(description).append("\n");
         sb.append("  mealTaken: ").append(mealTaken).append("\n");

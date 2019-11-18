@@ -74,7 +74,7 @@ public class MealServiceImpl implements MealService {
 
         if (mealId != 0) {
 
-            Optional<Profile> op = profileRepository.findById(request.getPersonID());
+            Optional<Profile> op = profileRepository.findById(request.getPersonId());
             Profile person = op.get();
 
             Timestamp ts = new Timestamp(now.getMillis());
@@ -136,7 +136,7 @@ public class MealServiceImpl implements MealService {
 
                 MealScanResponsePickUpRecordDTO pur = new MealScanResponsePickUpRecordDTO();
                 pur.setName(mto.getRemark());
-                pur.setPersonID(mto.getPersonId());
+                pur.setPersonId(mto.getPersonId());
 
                 pur.setPickUpDate(new DateTime(mto.getLastModified()).toString());
 
@@ -153,7 +153,7 @@ public class MealServiceImpl implements MealService {
     public MealStatusResponseMealPlansDTO retrieveMealPlanDetails(Integer householdId, Integer mealId) {
 
         MealStatusResponseMealPlansDTO mealStatus = new MealStatusResponseMealPlansDTO();
-        mealStatus.setMealID(mealId);
+        mealStatus.setMealId(mealId);
 
         // Verify Mealplan
         Optional<Meal> optionalMeal = mealRepository.findById(mealId);
@@ -196,7 +196,7 @@ public class MealServiceImpl implements MealService {
 
         for (Mealtracker mealtracker : mealtrackerList) {
             MealScanResponsePickUpRecordDTO mealPickupRecord = new MealScanResponsePickUpRecordDTO();
-            mealPickupRecord.setPersonID(mealtracker.getPersonId());
+            mealPickupRecord.setPersonId(mealtracker.getPersonId());
             mealPickupRecord.setPickUpDate(new DateTime(mealtracker.getLastModified()).toString());
             mealPickupRecord.setName(mealtracker.getRemark());
 
@@ -216,6 +216,7 @@ public class MealServiceImpl implements MealService {
             LocalTime st = new LocalTime(m.getStartTime());
             LocalTime et = new LocalTime(m.getEndTime());
 
+            logger.info("Meal ID:" + m.getId());
             Interval interval = new Interval(ld.toDateTime(st), ld.toDateTime(et));
 
             if (interval.contains(mealTime) || interval.getEnd().isEqual(mealTime)) {

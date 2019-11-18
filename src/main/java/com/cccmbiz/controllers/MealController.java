@@ -16,9 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/meal")
@@ -52,10 +54,13 @@ public class MealController {
 
         Integer householdId = mealService.getHouseholdIdByPersonID(id);
 
-        MealStatusResponseDTO response =  getMealStatus(householdId, mealId);
+        logger.info("Household ID: " + householdId + ", meal ID:" + mealId);
+
+        MealStatusResponseDTO response = getMealStatus(householdId, mealId);
+
         ResponseEntity<MealStatusResponseDTO> responseEntity = null;
 
-        if (response.getFamilyID() != 0) {
+        if (response.getHouseholdId() != 0) {
 
             responseEntity = new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.OK);
 
@@ -70,8 +75,13 @@ public class MealController {
     @ApiOperation(value = "Search Meal")
     @RequestMapping(value = "/status", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<MealStatusResponseDTO> searchMeal(@RequestBody MealStatusRequestDTO request) {
-        logger.info("Check Status Person ID:" + request.getPersonID());
+        logger.info("Check Status Person ID:" + request.getPersonId());
 
+        ResponseEntity<MealStatusResponseDTO> responseEntity = null;
+
+        if (request.getPersonId() == null || request.getPersonId() == 0) {
+            return new ResponseEntity<MealStatusResponseDTO>(new MealStatusResponseDTO(), HttpStatus.BAD_REQUEST);
+        }
         // Find entire meal plan associated with the household ID
         Integer mealId = 0;
 
@@ -81,13 +91,11 @@ public class MealController {
             mealId = request.getMealId();
         }
 
-        Integer householdId = mealService.getHouseholdIdByPersonID(request.getPersonID());
+        Integer householdId = mealService.getHouseholdIdByPersonID(request.getPersonId());
 
         MealStatusResponseDTO response = getMealStatus(householdId, mealId);
 
-        ResponseEntity<MealStatusResponseDTO> responseEntity = null;
-
-        if (response.getFamilyID() != 0) {
+        if (response.getHouseholdId() != 0) {
 
             responseEntity = new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.OK);
 
@@ -102,28 +110,34 @@ public class MealController {
     @ApiOperation(value = "Scan Meal")
     @RequestMapping(value = "/scan", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<MealScanResponseDTO> scanMeal(@RequestBody MealScanRequestDTO request) {
-        logger.info("Scan Person ID:" + request.getPersonID());
+        logger.info("Scan Person ID:" + request.getPersonId());
+        try {
+            MealScanResponseDTO response = mealService.scan(request);
+            // Find current meal plan associated with household of the scanned person
 
-        MealScanResponseDTO response = mealService.scan(request);
-        // Find current meal plan associated with household of the scanned person
+            // Retrieve meal information how many ordered, and picked up
 
-        // Retrieve meal information how many ordered, and picked up
+            // Verify meal ordered, how many has been taken. Check eligible to take new meal
 
-        // Verify meal ordered, how many has been taken. Check eligible to take new meal
+            // If eligible, update scan record and return success message
 
-        // If eligible, update scan record and return success message
+            return new ResponseEntity(response, HttpStatus.OK);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        } catch (NoSuchElementException exc) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Registration Not Found", exc);
+        }
+
     }
 
     private MealStatusResponseDTO getMealStatus(Integer householdId, Integer mealId) {
 
-        MealStatusResponseDTO mailStatus = new MealStatusResponseDTO();
+        MealStatusResponseDTO mealStatus = new MealStatusResponseDTO();
 
-        mailStatus.setFamilyID(householdId);
+        mealStatus.setHouseholdId(householdId);
 
         if (householdId == 0) {
-            return mailStatus; //return empty
+            return mealStatus; //return empty
         }
 
         // Retrieve meal information how many ordered, and picked up
@@ -131,8 +145,8 @@ public class MealController {
 
         List<MealStatusResponseMealPlansDTO> mealplanList = new ArrayList();
         mealplanList.add(mealplan);
-        mailStatus.setMealPlans(mealplanList);
+        mealStatus.setMealPlans(mealplanList);
 
-        return mailStatus;
+        return mealStatus;
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @ApiModel(description = "")
 public class MealStatusResponseDTO {
 
-    private Integer familyID = null;
+    private Integer householdId;
 
     private List<MealStatusResponseMealPlansDTO> mealPlans = new ArrayList<MealStatusResponseMealPlansDTO>();
 
@@ -19,15 +19,14 @@ public class MealStatusResponseDTO {
      *
      **/
     @ApiModelProperty(value = "")
-    @JsonProperty("familyID")
-    public Integer getFamilyID() {
-        return familyID;
+    @JsonProperty("houseHoldId")
+    public Integer getHouseholdId() {
+        return householdId;
     }
 
-    public void setFamilyID(Integer familyID) {
-        this.familyID = familyID;
+    public void setHouseholdId(Integer householdId) {
+        this.householdId = householdId;
     }
-
 
     /**
      *
@@ -48,7 +47,7 @@ public class MealStatusResponseDTO {
         StringBuilder sb = new StringBuilder();
         sb.append("class MealStatusResponseDTO {\n");
 
-        sb.append("  familyID: ").append(familyID).append("\n");
+        sb.append("  householdId: ").append(householdId).append("\n");
         sb.append("  mealPlans: ").append(mealPlans).append("\n");
         sb.append("}\n");
         return sb.toString();

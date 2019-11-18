@@ -7,6 +7,7 @@ import com.cccmbiz.repositories.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -15,8 +16,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -111,13 +110,13 @@ public class SpringJpaBootstrap implements ApplicationListener<ContextRefreshedE
 
         LocalTime now = LocalTime.now();
         //3 hours later
-        LocalTime end = now.plusHours(3);
+        LocalTime start = new LocalTime(0,1, 0);
         //3 minutes earlier
-        LocalTime start = now.minusMinutes(3);
+        LocalTime end = new LocalTime(23,59, 59);
 
         testMeal.setId(9999);
-        testMeal.setStartTime(Time.valueOf(start));
-        testMeal.setEndTime(Time.valueOf(end));
+        testMeal.setStartTime(new Time(start.toDateTimeToday().getMillis()));
+        testMeal.setEndTime(new Time(end.toDateTimeToday().getMillis()));
         testMeal.setDeadline(new Timestamp(119,12,31,11,59,59,0));
         testMeal.setType((byte) 3);
         testMeal.setLocation((byte) 2);
