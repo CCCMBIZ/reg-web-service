@@ -3,6 +3,7 @@ package com.cccmbiz.services;
 
 import com.cccmbiz.domain.Mealplan;
 import com.cccmbiz.dto.*;
+import com.cccmbiz.exception.MealException;
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -15,9 +16,9 @@ public interface MealService {
 
     public MealStatusResponseDTO status(MealStatusRequestDTO request);
 
-    public MealScanResponseDTO scan(MealScanRequestDTO request);
+    public MealScanResponseDTO scan(MealScanRequestDTO request) throws MealException;
 
-    public Integer getHouseholdIdByPersonID(Integer personId);
+    public Integer getHouseholdIdByPersonID(String sid);
 
     public Integer getMealIDByTime(DateTime mealTime) ;
 

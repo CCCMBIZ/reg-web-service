@@ -2,6 +2,7 @@ package com.cccmbiz.services;
 
 import com.cccmbiz.domain.*;
 import com.cccmbiz.dto.*;
+import com.cccmbiz.exception.MealException;
 import com.cccmbiz.repositories.*;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -10,6 +11,7 @@ import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -58,7 +60,7 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public MealScanResponseDTO scan(MealScanRequestDTO request) {
+    public MealScanResponseDTO scan(MealScanRequestDTO request) throws MealException {
 
         MealScanResponseDTO response = new MealScanResponseDTO();
 
@@ -66,16 +68,28 @@ public class MealServiceImpl implements MealService {
         response.setMealTaken(0);
         response.setMealRemaining(0);
 
+        // Find entire meal plan associated with the household ID
+        Integer mealId = 0;
         // Obtain current time
         DateTime now = DateTime.now();
 
-        // Find current meal ID
-        Integer mealId = getMealIDByTime(DateTime.now());
+        if (request.getMealId() == null || request.getMealId() == 0) {
+            mealId =getMealIDByTime(now);
+        } else {
+            mealId = request.getMealId();
+        }
+
+        response.setMealId(mealId);
 
         if (mealId != 0) {
 
-            Optional<Profile> op = profileRepository.findById(request.getPersonId());
-            Profile person = op.get();
+            Profile person = profileRepository.findProfileByUid(request.getId());
+
+            if (person == null) {
+                MealException exception = new MealException("Scanned ID " + request.getId() + "  Not Found") ;
+                exception.setStatus(HttpStatus.NOT_FOUND);
+                throw exception;
+            }
 
             Timestamp ts = new Timestamp(now.getMillis());
 
@@ -89,6 +103,7 @@ public class MealServiceImpl implements MealService {
             // Construct display name
             mt.setRemark(constructFullName(person));
             logger.debug("remark:" + mt.getRemark());
+
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
             Register register = registerRepository.findByHouseholdId(person.getHouseholdId());
@@ -98,6 +113,7 @@ public class MealServiceImpl implements MealService {
 
             // Retrieve mealOrdered total
             Integer mealTotal = 0;
+
             if (emeal != null) {
                 mealTotal = new Integer(emeal.getQty());
             }
@@ -117,11 +133,12 @@ public class MealServiceImpl implements MealService {
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
             if (mealTotal == 0 || mealTotal <= taken) {
                 logger.info("Exceed Order Count");
-
+                response.setMealStatus(1);
             } else {
                 mealtrackerRepository.save(mt);
                 taken++;
                 mealtrackers.add(mt);
+                response.setMealStatus(0);
             }
 
             response.setMealOrdered(mealTotal);
@@ -145,8 +162,8 @@ public class MealServiceImpl implements MealService {
 
             response.setPickUpRecord(mealScanResponsePickUpRecordDTOs);
         }
-        return response;
 
+        return response;
     }
 
     @Override
@@ -216,10 +233,11 @@ public class MealServiceImpl implements MealService {
             LocalTime st = new LocalTime(m.getStartTime());
             LocalTime et = new LocalTime(m.getEndTime());
 
-            logger.info("Meal ID:" + m.getId());
+//            logger.info("Meal ID:" + m.getId());
             Interval interval = new Interval(ld.toDateTime(st), ld.toDateTime(et));
 
             if (interval.contains(mealTime) || interval.getEnd().isEqual(mealTime)) {
+                logger.info("Found Meal ID : " + m.getId());
                 return m.getId();
             }
         }
@@ -228,12 +246,12 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Integer getHouseholdIdByPersonID(Integer personId) {
+    public Integer getHouseholdIdByPersonID(String sid) {
 
-        Optional<Profile> optionalProfile = profileRepository.findById(personId);
+        Profile profile = profileRepository.findProfileByUid(sid);
 
-        if (optionalProfile.isPresent()) {
-            return optionalProfile.get().getHouseholdId() ;
+        if (profile != null) {
+            return profile.getHouseholdId() ;
         }
         else { // Should throw NotFound exception?
             return 0 ;

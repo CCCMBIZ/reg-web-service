@@ -12,18 +12,38 @@ import java.util.List;
 @ApiModel(description = "")
 public class MealScanResponseDTO {
 
-
+    private Integer mealId = null ;
     private Integer mealOrdered = null;
-
-
     private Integer mealTaken = null;
-
-
     private Integer mealRemaining = null;
-
-
+    private Integer mealStatus = null ;
     private List<MealScanResponsePickUpRecordDTO> pickUpRecord = new ArrayList<MealScanResponsePickUpRecordDTO>();
 
+    /**
+     *
+     **/
+    @ApiModelProperty(value = "")
+    @JsonProperty("mealId")
+    public Integer getMealId() {
+        return mealId;
+    }
+
+    public void setMealId(Integer mealId) {
+        this.mealId = mealId;
+    }
+
+    /**
+     *
+     **/
+    @ApiModelProperty(value = "")
+    @JsonProperty("mealStatus")
+    public Integer getMealStatus() {
+        return mealStatus;
+    }
+
+    public void setMealStatus(Integer mealStatus) {
+        this.mealStatus = mealStatus;
+    }
 
     /**
      *
@@ -86,9 +106,11 @@ public class MealScanResponseDTO {
         StringBuilder sb = new StringBuilder();
         sb.append("class MealScanResponseDTO {\n");
 
+        sb.append("  mealId: ").append(mealId).append("\n");
         sb.append("  mealOrdered: ").append(mealOrdered).append("\n");
         sb.append("  mealTaken: ").append(mealTaken).append("\n");
         sb.append("  mealRemaining: ").append(mealRemaining).append("\n");
+        sb.append("  mealStatus: ").append(mealStatus).append("\n");
         sb.append("  pickUpRecord: ").append(pickUpRecord).append("\n");
         sb.append("}\n");
         return sb.toString();

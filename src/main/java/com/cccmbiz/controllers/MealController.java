@@ -3,6 +3,7 @@ package com.cccmbiz.controllers;
 import com.cccmbiz.domain.Mealplan;
 import com.cccmbiz.domain.Product;
 import com.cccmbiz.dto.*;
+import com.cccmbiz.exception.MealException;
 import com.cccmbiz.services.MealService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,9 +47,9 @@ public class MealController {
         return mealplanList;
     }
 
-    @ApiOperation(value = "Search meal status with an ID", response = Mealplan.class)
+    @ApiOperation(value = "Search meal status with an ID", response = ResponseEntity.class)
     @RequestMapping(value = "/status/{id}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<MealStatusResponseDTO> searchMeal(@PathVariable Integer id, Model model) {
+    public ResponseEntity<MealStatusResponseDTO> searchMeal(@PathVariable String id, Model model) {
 
         Integer mealId = mealService.getMealIDByTime(DateTime.now());
 
@@ -72,15 +73,16 @@ public class MealController {
         return responseEntity;
     }
 
-    @ApiOperation(value = "Search Meal")
+    @ApiOperation(value = "Search Meal", response = ResponseEntity.class)
     @RequestMapping(value = "/status", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<MealStatusResponseDTO> searchMeal(@RequestBody MealStatusRequestDTO request) {
-        logger.info("Check Status Person ID:" + request.getPersonId());
+        logger.info("Check Status Scanned ID:" + request.getId());
 
         ResponseEntity<MealStatusResponseDTO> responseEntity = null;
 
-        if (request.getPersonId() == null || request.getPersonId() == 0) {
-            return new ResponseEntity<MealStatusResponseDTO>(new MealStatusResponseDTO(), HttpStatus.BAD_REQUEST);
+        if (request.getId() == null || request.getId().isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Empty Scanned ID", null);
         }
         // Find entire meal plan associated with the household ID
         Integer mealId = 0;
@@ -91,7 +93,7 @@ public class MealController {
             mealId = request.getMealId();
         }
 
-        Integer householdId = mealService.getHouseholdIdByPersonID(request.getPersonId());
+        Integer householdId = mealService.getHouseholdIdByPersonID(request.getId());
 
         MealStatusResponseDTO response = getMealStatus(householdId, mealId);
 
@@ -107,11 +109,12 @@ public class MealController {
         return responseEntity;
     }
 
-    @ApiOperation(value = "Scan Meal")
+    @ApiOperation(value = "Scan Meal", response = ResponseEntity.class)
     @RequestMapping(value = "/scan", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<MealScanResponseDTO> scanMeal(@RequestBody MealScanRequestDTO request) {
-        logger.info("Scan Person ID:" + request.getPersonId());
+        logger.info("Scanned ID: " + request.getId() + " Meal ID:" + request.getMealId());
         try {
+
             MealScanResponseDTO response = mealService.scan(request);
             // Find current meal plan associated with household of the scanned person
 
@@ -123,9 +126,12 @@ public class MealController {
 
             return new ResponseEntity(response, HttpStatus.OK);
 
-        } catch (NoSuchElementException exc) {
+        } catch (NoSuchElementException noSuchElementException) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Registration Not Found", exc);
+                    HttpStatus.NOT_FOUND, "Registration Not Found", noSuchElementException);
+        } catch (MealException mealException) {
+            throw new ResponseStatusException(
+                    mealException.getStatus(), mealException.getMessage(), mealException);
         }
 
     }
