@@ -10,5 +10,8 @@ import java.util.List;
 
 @RepositoryRestResource
 public interface RegisterMealRepository extends CrudRepository<RegisterMeal, Integer>{
+
     RegisterMeal findRegisterMealByRegisterByRegisterIdAndMealByMealId(Register register, Meal meal);
+
+    List<RegisterMeal> findByRegisterByRegisterId(Register register) ;
 }

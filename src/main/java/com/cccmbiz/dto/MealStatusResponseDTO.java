@@ -19,7 +19,7 @@ public class MealStatusResponseDTO {
      *
      **/
     @ApiModelProperty(value = "")
-    @JsonProperty("houseHoldId")
+    @JsonProperty("householdId")
     public Integer getHouseholdId() {
         return householdId;
     }

@@ -18,12 +18,16 @@ public interface MealService {
 
     public MealScanResponseDTO scan(MealScanRequestDTO request) throws MealException;
 
-    public Integer getHouseholdIdByPersonID(String sid);
+    public Integer getHouseholdIdByPersonId(String sid) ;
 
-    public Integer getMealIDByTime(DateTime mealTime) ;
+    public Integer getMealIDByTime(DateTime mealTime);
+
+    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(String id)  throws MealException;
 
     public MealStatusResponseMealPlansDTO retrieveMealPlanDetails(Integer householdId, Integer mealId);
 
     public List<MealScanResponsePickUpRecordDTO> retrievePickupRecord(Integer householdId, Integer mealId);
+
+    public List<MealScanResponsePickUpRecordDTO> retrievePickupRecordByRegisterId(Integer registerId, Integer mealId);
 
 }

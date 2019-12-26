@@ -10,8 +10,11 @@ public class Mealtracker {
     private Timestamp lastModified;
     private Integer mealId;
     private Integer personId;
+    private Integer registerId;
     private Integer householdId;
     private String remark;
+
+
 
     @Id
     @Column(name = "tid")
@@ -45,7 +48,7 @@ public class Mealtracker {
     }
 
     @Basic
-    @Column(name = "PersonID")
+    @Column(name = "PersonId")
     public Integer getPersonId() {
         return personId;
     }
@@ -55,7 +58,17 @@ public class Mealtracker {
     }
 
     @Basic
-    @Column(name = "HouseholdID")
+    @Column(name = "RegisterId")
+    public Integer getRegisterId() {
+        return registerId;
+    }
+
+    public void setRegisterId(Integer registerId) {
+        this.registerId = registerId;
+    }
+
+    @Basic
+    @Column(name = "HouseholdId")
     public Integer getHouseholdId() {
         return householdId;
     }
@@ -83,12 +96,12 @@ public class Mealtracker {
                 personId == that.personId &&
                 Objects.equals(lastModified, that.lastModified) &&
                 Objects.equals(mealId, that.mealId) &&
-                Objects.equals(householdId, that.householdId) &&
+                Objects.equals(registerId, that.registerId) &&
                 Objects.equals(remark, that.remark);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tid, lastModified, mealId, personId, householdId, remark);
+        return Objects.hash(tid, lastModified, mealId, personId, registerId, remark);
     }
 }

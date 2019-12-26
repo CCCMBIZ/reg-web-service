@@ -51,38 +51,35 @@ public class MealController {
     @RequestMapping(value = "/status/{id}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<MealStatusResponseDTO> searchMeal(@PathVariable String id, Model model) {
 
-        Integer mealId = mealService.getMealIDByTime(DateTime.now());
+        try {
+            MealStatusResponseDTO response = new MealStatusResponseDTO();
+            List<MealStatusResponseMealPlansDTO> mealplanList = mealService.retrieveAllMealPlanDetails(id);
 
-        Integer householdId = mealService.getHouseholdIdByPersonID(id);
+            Integer registerId = mealService.getHouseholdIdByPersonId(id);
+            response.setHouseholdId(registerId);
+            response.setMealPlans(mealplanList);
 
-        logger.info("Household ID: " + householdId + ", meal ID:" + mealId);
+            return new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.OK);
 
-        MealStatusResponseDTO response = getMealStatus(householdId, mealId);
-
-        ResponseEntity<MealStatusResponseDTO> responseEntity = null;
-
-        if (response.getHouseholdId() != 0) {
-
-            responseEntity = new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.OK);
-
-        } else {
-
-            responseEntity = new ResponseEntity<MealStatusResponseDTO>(response, HttpStatus.NOT_FOUND);
+        } catch (NoSuchElementException noSuchElementException) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Registration Not Found", noSuchElementException);
+        } catch (MealException mealException) {
+            throw new ResponseStatusException(
+                    mealException.getStatus(), mealException.getMessage(), mealException);
         }
-
-        return responseEntity;
     }
 
     @ApiOperation(value = "Search Meal", response = ResponseEntity.class)
     @RequestMapping(value = "/status", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<MealStatusResponseDTO> searchMeal(@RequestBody MealStatusRequestDTO request) {
-        logger.info("Check Status Scanned ID:" + request.getId());
+        logger.info("Check Status of Scanned ID:" + request.getId() + " Meal ID: " + request.getMealId());
 
         ResponseEntity<MealStatusResponseDTO> responseEntity = null;
 
         if (request.getId() == null || request.getId().isEmpty()) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Empty Scanned ID", null);
+                    HttpStatus.BAD_REQUEST, "Empty Input ID", null);
         }
         // Find entire meal plan associated with the household ID
         Integer mealId = 0;
@@ -93,7 +90,7 @@ public class MealController {
             mealId = request.getMealId();
         }
 
-        Integer householdId = mealService.getHouseholdIdByPersonID(request.getId());
+        Integer householdId = mealService.getHouseholdIdByPersonId(request.getId());
 
         MealStatusResponseDTO response = getMealStatus(householdId, mealId);
 

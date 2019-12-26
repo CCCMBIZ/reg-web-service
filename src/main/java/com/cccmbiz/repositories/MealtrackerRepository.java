@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface MealtrackerRepository extends CrudRepository<Mealtracker, Integer> {
 
+    List<Mealtracker> findByRegisterIdAndMealId(Integer registerId, Integer mealId);
+
     List<Mealtracker> findByHouseholdIdAndMealId(Integer householdId, Integer mealId);
 
 }

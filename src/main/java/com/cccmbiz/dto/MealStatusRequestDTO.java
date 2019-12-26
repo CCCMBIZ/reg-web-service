@@ -35,7 +35,7 @@ public class MealStatusRequestDTO {
         return mealId;
     }
 
-    public void setMealId(Integer phoneNumber) {
+    public void setMealId(Integer mealId) {
         this.mealId = mealId;
     }
 

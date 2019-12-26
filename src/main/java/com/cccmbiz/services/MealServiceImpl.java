@@ -39,6 +39,9 @@ public class MealServiceImpl implements MealService {
     @Autowired
     private RegisterRepository registerRepository;
 
+    @Autowired
+    private RegisterProfileRepository registerProfileRepository;
+
     public void setMealRepository(MealRepository mealRepository) {
         this.mealRepository = mealRepository;
     }
@@ -74,7 +77,7 @@ public class MealServiceImpl implements MealService {
         DateTime now = DateTime.now();
 
         if (request.getMealId() == null || request.getMealId() == 0) {
-            mealId =getMealIDByTime(now);
+            mealId = getMealIDByTime(now);
         } else {
             mealId = request.getMealId();
         }
@@ -86,41 +89,40 @@ public class MealServiceImpl implements MealService {
             Profile person = profileRepository.findProfileByUid(request.getId());
 
             if (person == null) {
-                MealException exception = new MealException("Scanned ID " + request.getId() + "  Not Found") ;
+                MealException exception = new MealException("Scanned ID " + request.getId() + " Not Found");
                 exception.setStatus(HttpStatus.NOT_FOUND);
                 throw exception;
             }
 
-            Timestamp ts = new Timestamp(now.getMillis());
+            Register register = getRegisterByPersonId(person.getId());
+            // Retrieve Meal Information
+            Meal meal = mealRepository.findById(mealId).get();
+            // Obtain meal plan
+            RegisterMeal registerMeal = registerMealRepository.findRegisterMealByRegisterByRegisterIdAndMealByMealId(register, meal);
+
+            // Retrieve mealOrdered total
+            Integer mealTotal = 0;
+
+            if (registerMeal != null) {
+                mealTotal = new Integer(registerMeal.getQty());
+            }
 
             // Start meal tracking
             Mealtracker mt = new Mealtracker();
             mt.setPersonId(person.getId());
             mt.setHouseholdId(person.getHouseholdId());
+            mt.setRegisterId(register.getId());
             mt.setMealId(mealId);
+            Timestamp ts = new Timestamp(now.getMillis());
             mt.setLastModified(ts);
-
             // Construct display name
             mt.setRemark(constructFullName(person));
             logger.debug("remark:" + mt.getRemark());
 
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-            Register register = registerRepository.findByHouseholdId(person.getHouseholdId());
-            Meal meal = mealRepository.findById(mealId).get();
-
-            RegisterMeal emeal = registerMealRepository.findRegisterMealByRegisterByRegisterIdAndMealByMealId(register, meal);
-
-            // Retrieve mealOrdered total
-            Integer mealTotal = 0;
-
-            if (emeal != null) {
-                mealTotal = new Integer(emeal.getQty());
-            }
 
             // Obtain taken record of current scanned registrant
             List<Mealtracker> mealtrackers;
-            mealtrackers = mealtrackerRepository.findByHouseholdIdAndMealId(mt.getHouseholdId(), mealId);
+            mealtrackers = mealtrackerRepository.findByRegisterIdAndMealId(mt.getRegisterId(), mealId);
 
             Integer taken = 0;
 
@@ -166,6 +168,56 @@ public class MealServiceImpl implements MealService {
         return response;
     }
 
+    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(String id) throws MealException {
+
+        Profile person = profileRepository.findProfileByUid(id);
+
+        if (person == null) {
+            MealException exception = new MealException("Scanned ID " + id + " Not Found");
+            exception.setStatus(HttpStatus.NOT_FOUND);
+            throw exception;
+        }
+
+        Register register = getRegisterByPersonId(person.getId());
+        // Obtain meal plan
+        List<RegisterMeal> registerMealList = registerMealRepository.findByRegisterByRegisterId(register);
+
+        List<MealStatusResponseMealPlansDTO> mealplanList = new ArrayList();
+
+        for (RegisterMeal registerMeal : registerMealList) {
+            Integer mealId = registerMeal.getMealByMealId().getId();
+            MealStatusResponseMealPlansDTO mealplan = new MealStatusResponseMealPlansDTO();
+            mealplan.setMealId(mealId);
+            // Retrieve quantity of meal in this plan
+            mealplan.setMealOrdered(new Integer(registerMeal.getQty()));
+
+            // Obtain taken record of current scanned registrant
+            List<MealScanResponsePickUpRecordDTO> pickupRecords = retrievePickupRecordByRegisterId(registerMeal.getRegisterByRegisterId().getId(), mealId);
+            if (pickupRecords != null && !pickupRecords.isEmpty()) {
+                mealplan.setMealTaken(pickupRecords.size());
+                mealplan.setMealRemaining(mealplan.getMealOrdered() - mealplan.getMealTaken());
+            } else {
+                // No records yet
+                mealplan.setMealTaken(0);
+                mealplan.setMealRemaining(0);
+            }
+            mealplan.setPickUpRecord(pickupRecords);
+            Optional<Meal> optionalMeal = mealRepository.findById(mealId);
+            if (optionalMeal.isPresent()) {
+                Meal meal = optionalMeal.get();
+                String mealType = "" ;
+                Integer type = new Integer(meal.getType());
+                if (type == 1) { mealType = "BREAKFAST"; }
+                else if (type == 2) { mealType = "LUNCH"; }
+                else if (type == 3) { mealType = "DINNER"; }
+                mealplan.setDescription(mealType + " ON " + meal.getDate().toString() + " AT " + meal.getStartTime().toString());
+            }
+
+            mealplanList.add(mealplan);
+        }
+        return mealplanList;
+    }
+
     @Override
     public MealStatusResponseMealPlansDTO retrieveMealPlanDetails(Integer householdId, Integer mealId) {
 
@@ -187,7 +239,6 @@ public class MealServiceImpl implements MealService {
             if (registerMeal != null) {
                 // Retrieve quantity of meal in this plan
                 mealStatus.setMealOrdered(new Integer(registerMeal.getQty()));
-
                 // Obtain taken record of current scanned registrant
                 List<MealScanResponsePickUpRecordDTO> pickupRecords = retrievePickupRecord(householdId, mealId);
                 if (pickupRecords != null && !pickupRecords.isEmpty()) {
@@ -201,8 +252,25 @@ public class MealServiceImpl implements MealService {
                 mealStatus.setPickUpRecord(pickupRecords);
             }
         }
-
         return mealStatus;
+    }
+
+    @Override
+    public List<MealScanResponsePickUpRecordDTO> retrievePickupRecordByRegisterId(Integer registerId, Integer mealId) {
+
+        List<MealScanResponsePickUpRecordDTO> pickupRecords = new ArrayList<>();
+        List<Mealtracker> mealtrackerList = mealtrackerRepository.findByRegisterIdAndMealId(registerId, mealId);
+
+        for (Mealtracker mealtracker : mealtrackerList) {
+            MealScanResponsePickUpRecordDTO mealPickupRecord = new MealScanResponsePickUpRecordDTO();
+            mealPickupRecord.setPersonId(mealtracker.getPersonId());
+            mealPickupRecord.setPickUpDate(new DateTime(mealtracker.getLastModified()).toString());
+            mealPickupRecord.setName(mealtracker.getRemark());
+
+            pickupRecords.add(mealPickupRecord);
+        }
+
+        return pickupRecords;
     }
 
     @Override
@@ -246,16 +314,35 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Integer getHouseholdIdByPersonID(String sid) {
+    public Integer getHouseholdIdByPersonId(String sid) {
 
         Profile profile = profileRepository.findProfileByUid(sid);
 
         if (profile != null) {
-            return profile.getHouseholdId() ;
+            return profile.getHouseholdId();
+        } else { // Should throw NotFound exception?
+            return 0;
         }
-        else { // Should throw NotFound exception?
-            return 0 ;
+    }
+
+    private Register getRegisterByPersonId(Integer personId) throws MealException {
+
+        // Obtain registration ID based on person ID
+        Optional<RegisterProfile> op = registerProfileRepository.findById(personId);
+
+        if (!op.isPresent()) {
+            MealException exception = new MealException("Registration ID for " + personId + " Not Found");
+            exception.setStatus(HttpStatus.NOT_FOUND);
+            throw exception;
         }
+
+        RegisterProfile registerProfile = op.get();
+
+        // Retrieve Register Information
+        Optional<Register> optionalRegister = registerRepository.findById(registerProfile.getRegisterId());
+        Register register = optionalRegister.get();
+
+        return register;
     }
 
     private String constructFullName(Profile person) {

@@ -29,7 +29,7 @@ public class Mealplan {
     private Double lunchFee;
 
     @Id
-    @Column(name = "HouseholdID")
+    @Column(name = "householdId")
     public Integer getHouseholdId() {
         return householdId;
     }
