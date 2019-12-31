@@ -38,8 +38,6 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `event`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `event` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `uid` char(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -95,8 +93,7 @@ CREATE TABLE `meal` (
   `price` decimal(13,4) unsigned NOT NULL COMMENT 'price in dollar',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`),
-  KEY `event_id` (`event_id`),
-  CONSTRAINT `meal_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`) ON UPDATE CASCADE
+  KEY `event_id` (`event_id`)
 ) ;
 
 

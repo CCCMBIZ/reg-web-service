@@ -22,7 +22,7 @@ import java.util.Optional;
 @SpringBootTest(classes = {RepositoryConfiguration.class})
 public class MealRepositoryTest {
 
-    private Logger log = LogManager.getLogger(MealplanRepositoryTest.class);
+    private Logger log = LogManager.getLogger(MealPlanRepositoryTest.class);
 
     @Autowired
     private MealRepository mealRepository;

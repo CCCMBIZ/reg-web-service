@@ -22,13 +22,13 @@ public class MealServiceImpl implements MealService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private MealplanRepository mealplanRepository;
+    private MealPlanRepository mealplanRepository;
 
     @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
-    private MealtrackerRepository mealtrackerRepository;
+    private MealTrackerRepository mealtrackerRepository;
 
     @Autowired
     private MealRepository mealRepository;
@@ -47,12 +47,12 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Iterable<Mealplan> listAllMealplan() {
+    public Iterable<MealPlan> listAllMealplan() {
         return mealplanRepository.findAll();
     }
 
     @Override
-    public Mealplan findMealplanByHouseholdId(Integer householdId) {
+    public MealPlan findMealplanByHouseholdId(Integer householdId) {
         return mealplanRepository.findById(householdId).orElse(null);
     }
 
@@ -108,7 +108,7 @@ public class MealServiceImpl implements MealService {
             }
 
             // Start meal tracking
-            Mealtracker mt = new Mealtracker();
+            MealTracker mt = new MealTracker();
             mt.setPersonId(person.getId());
             mt.setHouseholdId(person.getHouseholdId());
             mt.setRegisterId(register.getId());
@@ -121,7 +121,7 @@ public class MealServiceImpl implements MealService {
 
 
             // Obtain taken record of current scanned registrant
-            List<Mealtracker> mealtrackers;
+            List<MealTracker> mealtrackers;
             mealtrackers = mealtrackerRepository.findByRegisterIdAndMealId(mt.getRegisterId(), mealId);
 
             Integer taken = 0;
@@ -147,11 +147,11 @@ public class MealServiceImpl implements MealService {
             response.setMealTaken(taken);
             response.setMealRemaining(mealTotal - taken);
 
-            Collections.sort(mealtrackers, (Comparator<Mealtracker>) (m1, m2) -> m2.getLastModified().compareTo(m1.getLastModified()));
+            Collections.sort(mealtrackers, (Comparator<MealTracker>) (m1, m2) -> m2.getLastModified().compareTo(m1.getLastModified()));
 
             List<MealScanResponsePickUpRecordDTO> mealScanResponsePickUpRecordDTOs = new ArrayList<>();
 
-            for (Mealtracker mto : mealtrackers) {
+            for (MealTracker mto : mealtrackers) {
 
                 MealScanResponsePickUpRecordDTO pur = new MealScanResponsePickUpRecordDTO();
                 pur.setName(mto.getRemark());
@@ -219,6 +219,16 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
+    public List<Meal> getMealInformation(Integer location) {
+        return mealRepository.findByLocation(location.byteValue());
+    }
+
+    @Override
+    public Long getMealPickupCount(Integer mealId) {
+        return mealtrackerRepository.countByMealId(mealId);
+    }
+
+    @Override
     public MealStatusResponseMealPlansDTO retrieveMealPlanDetails(Integer householdId, Integer mealId) {
 
         MealStatusResponseMealPlansDTO mealStatus = new MealStatusResponseMealPlansDTO();
@@ -259,9 +269,9 @@ public class MealServiceImpl implements MealService {
     public List<MealScanResponsePickUpRecordDTO> retrievePickupRecordByRegisterId(Integer registerId, Integer mealId) {
 
         List<MealScanResponsePickUpRecordDTO> pickupRecords = new ArrayList<>();
-        List<Mealtracker> mealtrackerList = mealtrackerRepository.findByRegisterIdAndMealId(registerId, mealId);
+        List<MealTracker> mealtrackerList = mealtrackerRepository.findByRegisterIdAndMealId(registerId, mealId);
 
-        for (Mealtracker mealtracker : mealtrackerList) {
+        for (MealTracker mealtracker : mealtrackerList) {
             MealScanResponsePickUpRecordDTO mealPickupRecord = new MealScanResponsePickUpRecordDTO();
             mealPickupRecord.setPersonId(mealtracker.getPersonId());
             mealPickupRecord.setPickUpDate(new DateTime(mealtracker.getLastModified()).toString());
@@ -277,9 +287,9 @@ public class MealServiceImpl implements MealService {
     public List<MealScanResponsePickUpRecordDTO> retrievePickupRecord(Integer householdId, Integer mealId) {
 
         List<MealScanResponsePickUpRecordDTO> pickupRecords = new ArrayList<>();
-        List<Mealtracker> mealtrackerList = mealtrackerRepository.findByHouseholdIdAndMealId(householdId, mealId);
+        List<MealTracker> mealtrackerList = mealtrackerRepository.findByHouseholdIdAndMealId(householdId, mealId);
 
-        for (Mealtracker mealtracker : mealtrackerList) {
+        for (MealTracker mealtracker : mealtrackerList) {
             MealScanResponsePickUpRecordDTO mealPickupRecord = new MealScanResponsePickUpRecordDTO();
             mealPickupRecord.setPersonId(mealtracker.getPersonId());
             mealPickupRecord.setPickUpDate(new DateTime(mealtracker.getLastModified()).toString());
@@ -294,7 +304,7 @@ public class MealServiceImpl implements MealService {
     @Override
     public Integer getMealIDByTime(DateTime mealTime) {
 
-        List<Meal> meals = mealRepository.findByLocation((byte) 2);
+        List<Meal> meals = mealRepository.findByLocation((byte) 1);
 
         for (Meal m : meals) {
             LocalDate ld = LocalDate.fromDateFields(m.getDate());

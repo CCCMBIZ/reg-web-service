@@ -1,12 +1,15 @@
 package com.cccmbiz.domain;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-public class Mealtracker {
-    private Integer tid;
+public class MealTracker {
+
+    private Integer id;
     private Timestamp lastModified;
     private Integer mealId;
     private Integer personId;
@@ -14,17 +17,15 @@ public class Mealtracker {
     private Integer householdId;
     private String remark;
 
-
-
     @Id
-    @Column(name = "tid")
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    public Integer getTid() {
-        return tid;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @ApiModelProperty(notes = "The database generated product ID")
+    public Integer getId() {
+        return id;
     }
 
-    public void setTid(Integer tid) {
-        this.tid = tid;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     @Basic
@@ -91,8 +92,8 @@ public class Mealtracker {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Mealtracker that = (Mealtracker) o;
-        return tid == that.tid &&
+        MealTracker that = (MealTracker) o;
+        return id == that.id &&
                 personId == that.personId &&
                 Objects.equals(lastModified, that.lastModified) &&
                 Objects.equals(mealId, that.mealId) &&
@@ -102,6 +103,6 @@ public class Mealtracker {
 
     @Override
     public int hashCode() {
-        return Objects.hash(tid, lastModified, mealId, personId, registerId, remark);
+        return Objects.hash(id, lastModified, mealId, personId, registerId, remark);
     }
 }

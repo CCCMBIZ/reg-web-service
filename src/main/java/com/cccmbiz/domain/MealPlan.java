@@ -5,8 +5,7 @@ import java.util.Objects;
 
 
 @Entity
-@Table(name = "meal_plan", schema = "cccc2019", catalog = "")
-public class Mealplan {
+public class MealPlan {
     private Integer householdId;
     private Integer breakfast1;
     private Integer breakfast2;
@@ -232,7 +231,7 @@ public class Mealplan {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Mealplan mealplan = (Mealplan) o;
+        MealPlan mealplan = (MealPlan) o;
         return Objects.equals(householdId, mealplan.householdId) &&
                 Objects.equals(breakfast1, mealplan.breakfast1) &&
                 Objects.equals(breakfast2, mealplan.breakfast2) &&

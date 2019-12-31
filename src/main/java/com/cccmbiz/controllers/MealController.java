@@ -1,6 +1,7 @@
 package com.cccmbiz.controllers;
 
-import com.cccmbiz.domain.Mealplan;
+import com.cccmbiz.domain.Meal;
+import com.cccmbiz.domain.MealPlan;
 import com.cccmbiz.domain.Product;
 import com.cccmbiz.dto.*;
 import com.cccmbiz.exception.MealException;
@@ -42,8 +43,8 @@ public class MealController {
     }
     )
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Iterable<Mealplan> list(Model model) {
-        Iterable<Mealplan> mealplanList = mealService.listAllMealplan();
+    public Iterable<MealPlan> list(Model model) {
+        Iterable<MealPlan> mealplanList = mealService.listAllMealplan();
         return mealplanList;
     }
 
@@ -131,6 +132,40 @@ public class MealController {
                     mealException.getStatus(), mealException.getMessage(), mealException);
         }
 
+    }
+
+
+    @ApiOperation(value = "Retrieve Meal Information", response = ResponseEntity.class)
+    @RequestMapping(value = "/info/{location}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<MealInfoResponse> info(@PathVariable Integer location, Model model) {
+
+        try {
+            MealInfoResponse response = new MealInfoResponse();
+            List<Meal> mealList = mealService.getMealInformation(location);
+            response.setMeals(mealList);
+
+            return new ResponseEntity<MealInfoResponse>(response, HttpStatus.OK);
+        } catch (NoSuchElementException noSuchElementException) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Registration Not Found", noSuchElementException);
+        }
+    }
+
+    @ApiOperation(value = "Retrieve Meal Information", response = ResponseEntity.class)
+    @RequestMapping(value = "/count/{mealId}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<MealCountResponse> count(@PathVariable Integer mealId, Model model) {
+
+        try {
+            MealCountResponse response = new MealCountResponse();
+            Long count = mealService.getMealPickupCount(mealId);
+            response.setCount(count);
+            response.setMealId(mealId);
+            return new ResponseEntity<MealCountResponse>(response, HttpStatus.OK);
+
+        } catch (NoSuchElementException noSuchElementException) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Registration Not Found", noSuchElementException);
+        }
     }
 
     private MealStatusResponseDTO getMealStatus(Integer householdId, Integer mealId) {

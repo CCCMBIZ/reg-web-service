@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "register_meal", schema = "cccc2019", catalog = "")
 public class RegisterMeal {
     private int id;
     private byte qty;

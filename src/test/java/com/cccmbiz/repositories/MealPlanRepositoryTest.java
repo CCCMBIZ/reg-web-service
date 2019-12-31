@@ -1,7 +1,7 @@
 package com.cccmbiz.repositories;
 
 import com.cccmbiz.configuration.RepositoryConfiguration;
-import com.cccmbiz.domain.Mealplan;
+import com.cccmbiz.domain.MealPlan;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -12,12 +12,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {RepositoryConfiguration.class})
-public class MealplanRepositoryTest {
+public class MealPlanRepositoryTest {
 
-    private Logger log = LogManager.getLogger(MealplanRepositoryTest.class);
+    private Logger log = LogManager.getLogger(MealPlanRepositoryTest.class);
 
     @Autowired
-    private MealplanRepository mealplanRepository;
+    private MealPlanRepository mealplanRepository;
 
     @Test
     public void testFindMealPlan(){

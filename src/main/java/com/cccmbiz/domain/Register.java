@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-@Table(name = "register", schema = "cccc2019", catalog = "")
 public class Register {
     private int id;
     private String uid;

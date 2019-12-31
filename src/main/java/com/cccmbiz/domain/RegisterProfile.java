@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "register_profile", schema = "cccc2019", catalog = "")
 public class RegisterProfile {
+
     private Integer profileId;
     private Integer registerId;
 

@@ -1,7 +1,7 @@
 package com.cccmbiz.repositories;
 
 import com.cccmbiz.configuration.RepositoryConfiguration;
-import com.cccmbiz.domain.Mealplan;
+import com.cccmbiz.domain.MealPlan;
 import com.cccmbiz.domain.RegisterProfile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +26,9 @@ public class RegisterProfileRepositoryTest {
     public void testGetRegisterProfile() {
 
         // Reset Data
-        registerProfileRepository.deleteAll();
+        if (registerProfileRepository.count() > 0) {
+            registerProfileRepository.deleteAll();
+        }
         // Load Register Profile
         ArrayList<RegisterProfile> list = new ArrayList();
 

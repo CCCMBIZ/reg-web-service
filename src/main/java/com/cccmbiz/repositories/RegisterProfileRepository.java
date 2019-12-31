@@ -1,6 +1,6 @@
 package com.cccmbiz.repositories;
 
-import com.cccmbiz.domain.Mealplan;
+import com.cccmbiz.domain.MealPlan;
 import com.cccmbiz.domain.RegisterProfile;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
