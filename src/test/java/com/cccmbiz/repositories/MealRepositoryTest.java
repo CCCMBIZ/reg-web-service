@@ -47,7 +47,7 @@ public class MealRepositoryTest {
         List<Meal> list = mealRepository.findByLocation((byte)1) ;
 
         for (Meal m: list) {
-            log.info("Meal Info:" + m.getDate() + " " + m.getFood() + " " + m.getEventByEventId().getNameEn());
+            log.info("Meal Info:" + m.getDate() + " " + m.getName() + " " + m.getEventByEventId().getNameEn());
         }
 
         Event ev = new Event() ;
@@ -56,7 +56,7 @@ public class MealRepositoryTest {
         List<Meal> elist = mealRepository.findByEventByEventId(ev);
 
         for (Meal m: elist) {
-            log.info("Meal Info2:" + m.getDate() + " " + m.getFood() + " " + m.getEventByEventId().getNameEn());
+            log.info("Meal Info2:" + m.getDate() + " " + m.getName() + " " + m.getEventByEventId().getNameEn());
         }
 
     }

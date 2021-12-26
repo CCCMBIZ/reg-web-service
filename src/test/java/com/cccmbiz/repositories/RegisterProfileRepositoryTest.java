@@ -20,30 +20,30 @@ public class RegisterProfileRepositoryTest {
     private Logger log = LogManager.getLogger(RegisterProfileRepositoryTest.class);
 
     @Autowired
-    private RegisterProfileRepository registerProfileRepository;
+    private RegisterRepository registerRepository;
 
     @Test
     public void testGetRegisterProfile() {
 
-        // Reset Data
-        if (registerProfileRepository.count() > 0) {
-            registerProfileRepository.deleteAll();
-        }
+//        // Reset Data
+//        if (registerProfileRepository.count() > 0) {
+//            registerProfileRepository.deleteAll();
+//        }
         // Load Register Profile
-        ArrayList<RegisterProfile> list = new ArrayList();
+//        ArrayList<RegisterProfile> list = new ArrayList();
+//
+//        for (RegisterProfileProjection rpp : registerRepository.getRegisterProfile()) {
+//            if (rpp != null) {
+//                RegisterProfile rp = new RegisterProfile();
+//                rp.setProfileId(rpp.getProfileId());
+//                rp.setRegisterId(rpp.getRegisterId());
+//
+//                log.info("Profile ID:" + rp.getProfileId() + " Register ID:" + rp.getRegisterId());
+//
+//                list.add(rp);
+//            }
+//        }
 
-        for (RegisterProfileProjection rpp : registerProfileRepository.getRegisterProfile()) {
-            if (rpp != null) {
-                RegisterProfile rp = new RegisterProfile();
-                rp.setProfileId(rpp.getProfileId());
-                rp.setRegisterId(rpp.getRegisterId());
-
-                log.info("Profile ID:" + rp.getProfileId() + " Register ID:" + rp.getRegisterId());
-
-                list.add(rp);
-            }
-        }
-
-        registerProfileRepository.saveAll(list);
+//        registerProfileRepository.saveAll(list);
     }
 }

@@ -1,10 +1,10 @@
 package com.cccmbiz.controllers;
 
-import com.cccmbiz.domain.Meal;
-import com.cccmbiz.domain.MealPlan;
-import com.cccmbiz.domain.Product;
+import com.cccmbiz.domain.*;
 import com.cccmbiz.dto.*;
 import com.cccmbiz.exception.MealException;
+import com.cccmbiz.repositories.ChurchRepository;
+import com.cccmbiz.repositories.MealPlanProjection;
 import com.cccmbiz.services.MealService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/meal")
@@ -32,25 +33,64 @@ public class MealController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    private ChurchRepository churchRepository;
+
+    @Autowired
     private MealService mealService;
 
-    @ApiOperation(value = "View a list of available products", response = Iterable.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    @RequestMapping(value = "/churches", method = RequestMethod.GET, produces = {"application/json; charset=UTF-8"})
+    public Iterable<Church> churchList() {
+        Iterable<Church> churchList = churchRepository.findAll();
+        return churchList;
     }
-    )
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Iterable<MealPlan> list(Model model) {
-        Iterable<MealPlan> mealplanList = mealService.listAllMealplan();
-        return mealplanList;
+
+    @GetMapping("/mealplan")
+    public ResponseEntity<List<MealPlanView>> listMealPlan(@RequestParam(required = false) Integer householdId) {
+        try {
+            List<MealPlanProjection> mealPlanProjection = new ArrayList<MealPlanProjection>();
+
+            if (householdId == null) {
+                mealPlanProjection = mealService.listAllMealPlan();
+            } else {
+                mealPlanProjection = mealService.findMealPlanByHouseholdId(householdId);
+            }
+
+            if (mealPlanProjection.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            List<MealPlanView> list = mealPlanProjection.stream()
+                    .map(this::convertToEntity)
+                    .collect(Collectors.toList());
+
+            return new ResponseEntity<>(list, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
+//    @ApiOperation(value = "View a list of available products", response = Iterable.class)
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "Successfully retrieved list"),
+//            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+//            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+//            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+//    }
+//    )
+//    @RequestMapping(value = "/mealplan", method = RequestMethod.GET, produces = "application/json")
+//    public Iterable<MealPlanView> listMealPlan((@RequestParam(required = false) Integer mealId) {
+//
+//        List<MealPlanProjection> mealPlanList = mealService.listAllMealPlan();
+//
+//        return mealPlanList.stream()
+//                .map(this::convertToEntity)
+//                .collect(Collectors.toList());
+//    }
 
     @ApiOperation(value = "Search meal status with an ID", response = ResponseEntity.class)
     @RequestMapping(value = "/status/{id}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<MealStatusResponseDTO> searchMeal(@PathVariable String id, Model model) {
+    public ResponseEntity<MealStatusResponseDTO> searchMeal(@PathVariable Integer id, Model model) {
 
         try {
             MealStatusResponseDTO response = new MealStatusResponseDTO();
@@ -91,7 +131,7 @@ public class MealController {
             mealId = request.getMealId();
         }
 
-        Integer householdId = mealService.getHouseholdIdByPersonId(request.getId());
+        Integer householdId = mealService.getHouseholdIdByPersonId(Integer.valueOf(request.getId()));
 
         MealStatusResponseDTO response = getMealStatus(householdId, mealId);
 
@@ -186,5 +226,23 @@ public class MealController {
         mealStatus.setMealPlans(mealplanList);
 
         return mealStatus;
+    }
+
+    private MealPlanView convertToEntity(MealPlanProjection view) {
+        MealPlanView mp = new MealPlanView();
+        mp.setHouseholdId(view.getHouseholdId());
+        mp.setBreakfast1(view.getBreakfast1());
+        mp.setBreakfast2(view.getBreakfast2());
+        mp.setBreakfast3(view.getBreakfast3());
+        mp.setDinner1(view.getDinner1());
+        mp.setDinner2(view.getDinner2());
+        mp.setDinner3(view.getDinner3());
+        mp.setLunch1(view.getLunch1());
+        mp.setLunch2(view.getLunch2());
+        mp.setLunch3(view.getLunch3());
+        mp.setBreakfastFee(view.getBreakfastFee());
+        mp.setDinnerFee(view.getDinnerFee());
+        mp.setLunchFee(view.getLunchFee());
+        return mp;
     }
 }

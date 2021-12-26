@@ -1,7 +1,6 @@
 package com.cccmbiz.repositories;
 
 import com.cccmbiz.configuration.RepositoryConfiguration;
-import com.cccmbiz.domain.MealPlan;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -27,8 +26,17 @@ public class MealPlanRepositoryTest {
 //        mp.setBreakfast1(12);
 //        mealplanRepository.save(mp);
 
-        for (MealPlanProjection m: mealplanRepository.findAllCustom()) {
-            log.info("Household ID:" + m.getHouseholdId() + " Breakfast1:" + m.getBreakfast2() + " Breakfast2:" + m.getBreakfast1() + " Breakfast3:" + m.getBreakfast3() + " Lunch1:" + m.getLunch1() + " Lunch2:" + m.getLunch2() + " Lunch3:" + m.getLunch3() + " Dinner1:" + m.getDinner1() + " Dinner2:" + m.getDinner2() + " Dinner3:" + m.getDinner3());
+        for (MealPlanProjection m: mealplanRepository.findAllMealPlan()) {
+            log.info("Household ID:" + m.getHouseholdId()
+                    + " Breakfast1:" + m.getBreakfast2()
+                    + " Breakfast2:" + m.getBreakfast1()
+                    + " Breakfast3:" + m.getBreakfast3()
+                    + " Lunch1:" + m.getLunch1()
+                    + " Lunch2:" + m.getLunch2()
+                    + " Lunch3:" + m.getLunch3()
+                    + " Dinner1:" + m.getDinner1()
+                    + " Dinner2:" + m.getDinner2()
+                    + " Dinner3:" + m.getDinner3());
         }
 
 //        assertNotNull(church.getId()); //not null after save

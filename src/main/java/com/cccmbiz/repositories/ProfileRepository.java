@@ -6,5 +6,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource
 public interface ProfileRepository extends CrudRepository<Profile, Integer>{
-    Profile findProfileByUid(String uid);
+    Profile findProfileById(Integer id);
+    Profile findProfileByUid(String id);
 }

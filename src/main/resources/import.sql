@@ -1,0 +1,2 @@
+INSERT INTO church (id, acronym, name_cn, name_en, address, city, state, zipcode, region, website, admin_id) VALUES (1,'NA','無','None','','','','','','',NULL);
+INSERT INTO church (id, acronym, name_cn, name_en, address, city, state, zipcode, region, website, admin_id) VALUES (2,'OTH','其它教會','Other (Not Listed)','','',	'','','','',NULL);
