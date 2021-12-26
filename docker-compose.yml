@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  frontendui:
+    build:
+      context: ../meal-pickup-service
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - 8090:8090
+    depends_on:
+      - apiservice
+    environment:
+      - server.port=8090
+      - provider.service.url=http://apiservice:9008/api/meal/scan
+      - provider.meal.service.url=http://apiservice:9008/api/meal/status
+      - provider.meals.service.url=http://apiservice:9008/api/meals
+  apiservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - 8088:9008
+    depends_on:
+      - mariadb
+    environment:
+      - spring.datasource.url=jdbc:mariadb://mariadb:3306/cccc
+      - spring.datasource.username=root
+      - spring.datasource.password=my-secret-pw
+      - spring.datasource.driverClassName=org.mariadb.jdbc.Driver
+      - spring.jpa.show-sql=true
+      - spring.jpa.hibernate.dd-auto=none
+      - spring.jpa.properties.hibernate.id.new_generator_mappings=false
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MMARIADB_USER: example-user
+      MARIADB_PASSWORD: my_cool_secret
+      MARIADB_DATABASE: cccc
+      MARIADB_ROOT_PASSWORD: my-secret-pw
+    ports:
+      - 3306:3306
+    volumes:
+      - D:\Documents\Projects\reg-web-service\datadir:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

@@ -22,7 +22,7 @@ public class MealServiceImpl implements MealService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private MealPlanRepository mealplanRepository;
+    private MealPlanRepository mealPlanRepository;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -47,13 +47,13 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Iterable<MealPlan> listAllMealplan() {
-        return mealplanRepository.findAll();
+    public List<MealPlanProjection> listAllMealPlan() {
+        return mealPlanRepository.findAllMealPlan();
     }
 
     @Override
-    public MealPlan findMealplanByHouseholdId(Integer householdId) {
-        return mealplanRepository.findById(householdId).orElse(null);
+    public List<MealPlanProjection> findMealPlanByHouseholdId(Integer householdId) {
+        return mealPlanRepository.findMealPlanByHouseholdId(householdId);
     }
 
     @Override
@@ -100,6 +100,10 @@ public class MealServiceImpl implements MealService {
             // Obtain meal plan
             RegisterMeal registerMeal = registerMealRepository.findRegisterMealByRegisterByRegisterIdAndMealByMealId(register, meal);
 
+            logger.debug("scan:meal ID:" + registerMeal.getMealByMealId().getId());
+            logger.debug("scan:register ID:" + registerMeal.getRegisterByRegisterId().getId());
+            logger.debug("scan:household ID:" + registerMeal.getRegisterByRegisterId().getHouseholdId());
+            logger.debug("scan:meal quantity:" + registerMeal.getQty());
             // Retrieve mealOrdered total
             Integer mealTotal = 0;
 
@@ -168,9 +172,9 @@ public class MealServiceImpl implements MealService {
         return response;
     }
 
-    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(String id) throws MealException {
+    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(Integer id) throws MealException {
 
-        Profile person = profileRepository.findProfileByUid(id);
+        Profile person = profileRepository.findProfileById(id);
 
         if (person == null) {
             MealException exception = new MealException("Scanned ID " + id + " Not Found");
@@ -242,7 +246,7 @@ public class MealServiceImpl implements MealService {
         if (optionalMeal.isPresent() && (register = registerRepository.findByHouseholdId(householdId)) != null) {
             Meal meal = optionalMeal.get();
             // Setup meal description
-            mealStatus.setDescription(meal.getFood() + " on " + meal.getDate() + " " + meal.getStartTime() + " $" + meal.getPrice());
+            mealStatus.setDescription(meal.getName() + " on " + meal.getDate() + " " + meal.getStartTime() + " $" + meal.getPrice());
             // Check and retrieve if there is meal plan associate with the household
             RegisterMeal registerMeal = registerMealRepository.findRegisterMealByRegisterByRegisterIdAndMealByMealId(register, meal);
 
@@ -324,9 +328,9 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Integer getHouseholdIdByPersonId(String sid) {
+    public Integer getHouseholdIdByPersonId(Integer id) {
 
-        Profile profile = profileRepository.findProfileByUid(sid);
+        Profile profile = profileRepository.findProfileById(id);
 
         if (profile != null) {
             return profile.getHouseholdId();
@@ -338,18 +342,18 @@ public class MealServiceImpl implements MealService {
     private Register getRegisterByPersonId(Integer personId) throws MealException {
 
         // Obtain registration ID based on person ID
-        Optional<RegisterProfile> op = registerProfileRepository.findById(personId);
+        RegisterProfileProjection op = registerProfileRepository.getRegisterProfile(personId);
 
-        if (!op.isPresent()) {
+        if (op == null) {
             MealException exception = new MealException("Registration ID for " + personId + " Not Found");
             exception.setStatus(HttpStatus.NOT_FOUND);
             throw exception;
         }
-
-        RegisterProfile registerProfile = op.get();
+//
+//        RegisterProfile registerProfile = op.get();
 
         // Retrieve Register Information
-        Optional<Register> optionalRegister = registerRepository.findById(registerProfile.getRegisterId());
+        Optional<Register> optionalRegister = registerRepository.findById(op.getRegisterId());
         Register register = optionalRegister.get();
 
         return register;
@@ -387,4 +391,5 @@ public class MealServiceImpl implements MealService {
     private Integer getMealOrderedQuantity(Integer householdId, Integer mealId) {
         return 0;
     }
+
 }

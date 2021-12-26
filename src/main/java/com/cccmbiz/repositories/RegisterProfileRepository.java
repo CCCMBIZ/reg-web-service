@@ -4,13 +4,14 @@ import com.cccmbiz.domain.MealPlan;
 import com.cccmbiz.domain.RegisterProfile;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 
 public interface RegisterProfileRepository extends CrudRepository<RegisterProfile, Integer> {
 
-    @Query(value="SELECT p.profile_id AS profileId, register.id AS registerId FROM (register JOIN JSON_TABLE(register.profile_id, '$[*]' COLUMNS (profile_id int path '$')) p) ", nativeQuery=true)
-    List<RegisterProfileProjection> getRegisterProfile();
+    @Query(value="SELECT p.profile_id AS profileId, register.id AS registerId FROM (register JOIN JSON_TABLE(register.profile_id, '$[*]' COLUMNS (profile_id int path '$')) p) WHERE register.event_id=17 AND p.profile_id = :profileId ", nativeQuery=true)
+    RegisterProfileProjection getRegisterProfile(@Param("profileId") Integer profileId);
 
 }

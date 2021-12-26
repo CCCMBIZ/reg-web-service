@@ -17,7 +17,7 @@ public class Meal {
     private Timestamp deadline;
     private byte type;
     private byte location;
-    private String food;
+    private String name;
     private BigDecimal price;
     private Event eventByEventId;
 
@@ -102,13 +102,13 @@ public class Meal {
     }
 
     @Basic
-    @Column(name = "food")
-    public String getFood() {
-        return food;
+    @Column(name = "name")
+    public String getName() {
+        return name;
     }
 
-    public void setFood(String food) {
-        this.food = food;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Basic
@@ -134,13 +134,13 @@ public class Meal {
                 Objects.equals(startTime, meal.startTime) &&
                 Objects.equals(endTime, meal.endTime) &&
                 Objects.equals(deadline, meal.deadline) &&
-                Objects.equals(food, meal.food) &&
+                Objects.equals(name, meal.name) &&
                 Objects.equals(price, meal.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, uid, date, startTime, endTime, deadline, type, location, food, price);
+        return Objects.hash(id, uid, date, startTime, endTime, deadline, type, location, name, price);
     }
 
     @ManyToOne

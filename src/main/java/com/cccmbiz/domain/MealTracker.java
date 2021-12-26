@@ -18,7 +18,7 @@ public class MealTracker {
     private String remark;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "The database generated product ID")
     public Integer getId() {
         return id;

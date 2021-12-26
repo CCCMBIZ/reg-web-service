@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 public class Church {
-    private int id;
+    private Integer id;
     private String acronym;
     private String nameCn;
     private String nameEn;
@@ -18,18 +18,19 @@ public class Church {
     private String zipcode;
     private String region;
     private String website;
+    private Integer adminId;
 
     @Id
     @Column(name = "id")
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "acronym")
     public String getAcronym() {
         return acronym;
@@ -39,7 +40,7 @@ public class Church {
         this.acronym = acronym;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "name_cn")
     public String getNameCn() {
         return nameCn;
@@ -49,7 +50,7 @@ public class Church {
         this.nameCn = nameCn;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "name_en")
     public String getNameEn() {
         return nameEn;
@@ -59,7 +60,7 @@ public class Church {
         this.nameEn = nameEn;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "address")
     public String getAddress() {
         return address;
@@ -69,7 +70,7 @@ public class Church {
         this.address = address;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "city")
     public String getCity() {
         return city;
@@ -79,7 +80,7 @@ public class Church {
         this.city = city;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "state")
     public String getState() {
         return state;
@@ -89,7 +90,7 @@ public class Church {
         this.state = state;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "zipcode")
     public String getZipcode() {
         return zipcode;
@@ -99,7 +100,7 @@ public class Church {
         this.zipcode = zipcode;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "region")
     public String getRegion() {
         return region;
@@ -109,7 +110,7 @@ public class Church {
         this.region = region;
     }
 
-    @Basic
+//    @Basic
     @Column(name = "website")
     public String getWebsite() {
         return website;
@@ -118,6 +119,17 @@ public class Church {
     public void setWebsite(String website) {
         this.website = website;
     }
+
+//    @Basic
+    @Column(name = "admin_id")
+    public Integer getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(Integer adminId) {
+        this.adminId = adminId;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -133,7 +145,7 @@ public class Church {
                 Objects.equals(state, church.state) &&
                 Objects.equals(zipcode, church.zipcode) &&
                 Objects.equals(region, church.region) &&
-                Objects.equals(website, church.website);
+                Objects.equals(website, church.website) ;
     }
 
     @Override
