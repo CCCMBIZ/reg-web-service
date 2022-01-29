@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 // dont authenticate this particular request
                 .authorizeRequests().antMatchers(SWAGGER_WHITELIST).permitAll()
-                .antMatchers("/", "/index.html", "/meal/**/**","/meals/**", "/registerMeals/**/**", "/welcome","/console/**").permitAll()
+                .antMatchers("/", "/index.html", "/meal/**/**","/meals/**", "/mealTrackers/**/**", "/welcome","/console/**").permitAll()
                 // All urls must be authenticated (filter for token always fires (/**)
                 .anyRequest().authenticated().and()
                 // don't create session

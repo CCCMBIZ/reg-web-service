@@ -89,14 +89,14 @@ public class MealController {
 //    }
 
     @ApiOperation(value = "Search meal status with an ID", response = ResponseEntity.class)
-    @RequestMapping(value = "/status/{id}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<MealStatusResponseDTO> searchMeal(@PathVariable Integer id, Model model) {
+    @RequestMapping(value = "/status/{uid}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<MealStatusResponseDTO> searchMeal(@PathVariable String uid, Model model) {
 
         try {
             MealStatusResponseDTO response = new MealStatusResponseDTO();
-            List<MealStatusResponseMealPlansDTO> mealplanList = mealService.retrieveAllMealPlanDetails(id);
+            List<MealStatusResponseMealPlansDTO> mealplanList = mealService.retrieveAllMealPlanDetails(uid);
 
-            Integer registerId = mealService.getHouseholdIdByPersonId(id);
+            Integer registerId = mealService.getHouseholdIdByUniqueId(uid);
             response.setHouseholdId(registerId);
             response.setMealPlans(mealplanList);
 

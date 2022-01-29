@@ -13,6 +13,7 @@ public class MealTracker {
     private Timestamp lastModified;
     private Integer mealId;
     private Integer personId;
+    private String uid;
     private Integer registerId;
     private Integer householdId;
     private String remark;
@@ -36,6 +37,16 @@ public class MealTracker {
 
     public void setLastModified(Timestamp lastModified) {
         this.lastModified = lastModified;
+    }
+
+    @Basic
+    @Column(name = "Uid")
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     @Basic

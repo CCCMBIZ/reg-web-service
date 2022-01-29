@@ -13,7 +13,7 @@
 
     <groupId>com.cccmbiz</groupId>
     <artifactId>reg-web-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.5</version>
 
     <name>Spring Boot Web Application</name>
     <description>Spring Boot Web Application</description>

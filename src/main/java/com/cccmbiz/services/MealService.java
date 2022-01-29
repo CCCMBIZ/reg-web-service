@@ -22,6 +22,7 @@ public interface MealService {
     public MealScanResponseDTO scan(MealScanRequestDTO request) throws MealException;
 
     public Integer getHouseholdIdByPersonId(Integer id);
+    public Integer getHouseholdIdByUniqueId(String uid);
 
     public Integer getMealIDByTime(DateTime mealTime);
 
@@ -29,7 +30,8 @@ public interface MealService {
 
     public Long getMealPickupCount(Integer mealId);
 
-    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(Integer id)  throws MealException;
+//    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(Integer id)  throws MealException;
+    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(String uid) throws MealException;
 
     public MealStatusResponseMealPlansDTO retrieveMealPlanDetails(Integer householdId, Integer mealId);
 

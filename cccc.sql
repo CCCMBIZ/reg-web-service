@@ -5,29 +5,9 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
 
-
 CREATE DATABASE IF NOT EXISTS cccc;
 
 USE cccc;
-
-DROP TABLE IF EXISTS meal_plan;
-CREATE TABLE meal_plan
-(
-    household_id  INT    NOT NULL,
-    breakfast1    INT    NULL,
-    breakfast2    INT    NULL,
-    breakfast3    INT    NULL,
-    dinner1       INT    NULL,
-    dinner2       INT    NULL,
-    dinner3       INT    NULL,
-    lunch1        INT    NULL,
-    lunch2        INT    NULL,
-    lunch3        INT    NULL,
-    breakfast_fee DOUBLE NULL,
-    dinner_fee    DOUBLE NULL,
-    lunch_fee     DOUBLE NULL,
-    CONSTRAINT pk_mealplan PRIMARY KEY (household_id)
-);
 
 DROP TABLE IF EXISTS meal_tracker;
 CREATE TABLE meal_tracker
@@ -40,14 +20,6 @@ CREATE TABLE meal_tracker
     household_id  INT          NULL,
     remark        VARCHAR(255) NULL,
     CONSTRAINT pk_mealtracker PRIMARY KEY (id)
-);
-
-DROP TABLE IF EXISTS register_profile;
-CREATE TABLE register_profile
-(
-    profile_id  INT NOT NULL,
-    register_id INT NULL,
-    CONSTRAINT pk_registerprofile PRIMARY KEY (profile_id)
 );
 
 DROP TABLE IF EXISTS `church`;
@@ -5869,7 +5841,7 @@ CREATE TABLE `register` (
   `stripe_customer_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `checkin_time` datetime DEFAULT NULL,
-  `total_people` tinyint unsigned DEFAULT NULL,
+  `total_people` tinyint unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`),
   KEY `user_id` (`household_id`),
@@ -8170,7 +8142,7 @@ INSERT INTO `register_meal` (`id`, `register_id`, `meal_id`, `qty`) VALUES
 (23,	5,	15,	1),
 (24,	5,	18,	1),
 (25,	5,	13,	1),
-(26,	5,	27,	1), 
+(26,	5,	27,	1),
 (27,	5,	28,	1),
 (28,	6,	10,	2),
 (29,	6,	17,	2),

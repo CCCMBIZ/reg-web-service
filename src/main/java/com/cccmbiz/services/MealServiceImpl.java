@@ -100,20 +100,27 @@ public class MealServiceImpl implements MealService {
             // Obtain meal plan
             RegisterMeal registerMeal = registerMealRepository.findRegisterMealByRegisterByRegisterIdAndMealByMealId(register, meal);
 
-            logger.debug("scan:meal ID:" + registerMeal.getMealByMealId().getId());
-            logger.debug("scan:register ID:" + registerMeal.getRegisterByRegisterId().getId());
-            logger.debug("scan:household ID:" + registerMeal.getRegisterByRegisterId().getHouseholdId());
-            logger.debug("scan:meal quantity:" + registerMeal.getQty());
+
             // Retrieve mealOrdered total
             Integer mealTotal = 0;
 
             if (registerMeal != null) {
                 mealTotal = new Integer(registerMeal.getQty());
+            } else {
+                MealException exception = new MealException("No meal Order Information");
+                exception.setStatus(HttpStatus.NOT_FOUND);
+                throw exception;
             }
+
+            logger.debug("scan:meal ID:" + registerMeal.getMealByMealId().getId());
+            logger.debug("scan:register ID:" + registerMeal.getRegisterByRegisterId().getId());
+            logger.debug("scan:household ID:" + registerMeal.getRegisterByRegisterId().getHouseholdId());
+            logger.debug("scan:meal quantity:" + registerMeal.getQty());
 
             // Start meal tracking
             MealTracker mt = new MealTracker();
             mt.setPersonId(person.getId());
+            mt.setUid(person.getUid());
             mt.setHouseholdId(person.getHouseholdId());
             mt.setRegisterId(register.getId());
             mt.setMealId(mealId);
@@ -172,12 +179,12 @@ public class MealServiceImpl implements MealService {
         return response;
     }
 
-    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(Integer id) throws MealException {
+    public List<MealStatusResponseMealPlansDTO> retrieveAllMealPlanDetails(String uid) throws MealException {
 
-        Profile person = profileRepository.findProfileById(id);
+        Profile person = profileRepository.findProfileByUid(uid);
 
         if (person == null) {
-            MealException exception = new MealException("Scanned ID " + id + " Not Found");
+            MealException exception = new MealException("Scanned ID " + uid + " Not Found");
             exception.setStatus(HttpStatus.NOT_FOUND);
             throw exception;
         }
@@ -331,6 +338,18 @@ public class MealServiceImpl implements MealService {
     public Integer getHouseholdIdByPersonId(Integer id) {
 
         Profile profile = profileRepository.findProfileById(id);
+
+        if (profile != null) {
+            return profile.getHouseholdId();
+        } else { // Should throw NotFound exception?
+            return 0;
+        }
+    }
+
+    @Override
+    public Integer getHouseholdIdByUniqueId(String uid) {
+
+        Profile profile = profileRepository.findProfileByUid(uid);
 
         if (profile != null) {
             return profile.getHouseholdId();
