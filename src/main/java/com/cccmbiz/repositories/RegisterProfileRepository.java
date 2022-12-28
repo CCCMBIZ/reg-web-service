@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface RegisterProfileRepository extends CrudRepository<RegisterProfile, Integer> {
 
-    @Query(value="SELECT p.profile_id AS profileId, register.id AS registerId FROM (register JOIN JSON_TABLE(register.profile_id, '$[*]' COLUMNS (profile_id int path '$')) p) WHERE register.event_id=17 AND p.profile_id = :profileId ORDER BY last_update DESC limit 1", nativeQuery=true)
+    @Query(value="SELECT p.profile_id AS profileId, register.id AS registerId FROM (register JOIN JSON_TABLE(register.profile_id, '$[*]' COLUMNS (profile_id int path '$')) p) WHERE register.event_id=33 AND p.profile_id = :profileId ORDER BY last_update DESC limit 1", nativeQuery=true)
     RegisterProfileProjection getRegisterProfile(@Param("profileId") Integer profileId);
 
 }

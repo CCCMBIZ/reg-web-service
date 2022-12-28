@@ -3,7 +3,7 @@ version: '3'
 services:
   frontendui:
     build:
-      context: ../meal-pickup-service
+      context: ../meal-pickup-frontend
       dockerfile: Dockerfile
     restart: on-failure
     ports:
@@ -16,7 +16,7 @@ services:
       - provider.meal.service.url=http://apiservice:9008/api/meal/status
       - provider.meals.service.url=http://apiservice:9008/api/meals
   apiservice:
-#    image: chehhoo/reg-web-service:1.0.3
+#    image: chehhoo/reg-web-service:1.0.6
     build:
       context: .
       dockerfile: Dockerfile
@@ -45,9 +45,11 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - D:\Documents\Projects\reg-web-service\datadir:/var/lib/mysql
+      - C:\Users\chehh\Projects\reg-web-service\datadir:/var/lib/mysql
   adminer:
     image: adminer
     restart: always
+    depends_on:
+      - mariadb
     ports:
       - 8080:8080
